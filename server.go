@@ -1,11 +1,14 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"log"
 	"os"
 	"os/signal"
-	_ "github.com/austinjan/config"
+
+	_ "github.com/autinjan/idps_server/config"
+	"github.com/autinjan/idps_server/servers"
 	"github.com/spf13/viper"
 )
 
@@ -18,6 +21,9 @@ func main() {
 	defer logFile.Close()
 	log.SetOutput(logFile)
 
+	httpCtx, httpDone := context.WithCancel(context.Background())
+	go servers.Run(httpCtx)
+
 	c := make(chan os.Signal, 1)
 	// We'll accept graceful shutdowns when quit via SIGINT (Ctrl+C)
 	// SIGKILL, SIGQUIT or SIGTERM (Ctrl+/) will not be caught.
@@ -25,5 +31,6 @@ func main() {
 
 	// Block until we receive our signal.
 	<-c
+	httpDone()
 	os.Exit(0)
 }
