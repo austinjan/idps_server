@@ -1,12 +1,13 @@
 package servers
 
 import (
-	"io/ioutil"
-	"net/http"
-	"go.mongodb.org/mongo-driver/bson"
-	"time"
-	mongodb "github.com/austinjan/idps_server/servers/mongo"
+	"encoding/json"
 	"fmt"
+	mongodb "github.com/austinjan/idps_server/servers/mongo"
+	"io/ioutil"
+	"log"
+	"net/http"
+	"time"
 )
 
 type pollingProcessor struct {
@@ -23,9 +24,7 @@ func newPollingPorcessor() *pollingProcessor {
 	return rv
 }
 
-
 type response struct {
-	ID      string `json:"_id" bson:"_id"`
 	Key     string `json:"key" bson:"key"`
 	Message string `json:"message" bson:"message"`
 }
@@ -41,10 +40,16 @@ func requestData() {
 	if err != nil {
 		fmt.Println("Get error!!", err.Error())
 	}
-	fmt.Printf("%s", body)
-	var bsonData bson.M
-	bson.Unmarshal(body,&bsonData)
-	db.SaveTagPosition(bsonData) 
+
+	var bodyBson []map[string]interface{}
+
+	if err := json.Unmarshal(body, &bodyBson); err != nil {
+		log.Println("Request body can not parse!", err)
+	}
+
+	fmt.Println(bodyBson[0])
+
+	db.SaveTagPosition(bodyBson[0])
 }
 
 func (p *pollingProcessor) run() {

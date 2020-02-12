@@ -73,8 +73,8 @@ func (d *DB) SaveTagPosition(data bson.M) {
 	defer cancel()
 	collection := d.db.Collection("tagInformation")
 
-	res, err := collection.InsertOne(ctx, data)
-	fmt.Println("Insert id:", res.InsertedID)
+	_, err := collection.InsertOne(ctx, data)
+	//fmt.Println("Insert id:", res.InsertedID)
 
 	if err != nil {
 		log.Println(err)
