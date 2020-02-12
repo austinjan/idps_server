@@ -10,7 +10,7 @@ import (
 	"net/http"
 	"time"
 )
-
+// Run: run server
 func Run(ctx context.Context) {
 	r := mux.NewRouter()
 
@@ -25,17 +25,16 @@ func Run(ctx context.Context) {
 	if !ok {
 		_addr = ":3011"
 	}
-	_timeout, ok := settings["timeout"]
-	if !ok {
-		_timeout = 5
-	}
+
 	srv := &http.Server{
 		Addr:         _addr.(string),
-		WriteTimeout: time.Second * _timeout.(time.Duration),
-		ReadTimeout:  time.Second * _timeout.(time.Duration),
+		WriteTimeout: time.Second * 5,
+		ReadTimeout:  time.Second * 5,
 		Handler:      handler,
 	}
 	router.InitRouter(r)
+	polling := newPollingPorcessor()
+
 	go func() {
 		if err := srv.ListenAndServe(); err != nil {
 			log.Fatal(err)
@@ -47,6 +46,7 @@ func Run(ctx context.Context) {
 	// fmt.Println("Running mqtt subscribe server...")
 
 	<-ctx.Done()
+	polling.stop <- "done"
 
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*2)
 	defer cancel()

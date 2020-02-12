@@ -3,13 +3,12 @@ package main
 import (
 	"context"
 	"fmt"
+	_ "github.com/austinjan/idps_server/config"
+	"github.com/austinjan/idps_server/servers"
+	"github.com/spf13/viper"
 	"log"
 	"os"
 	"os/signal"
-
-	_ "github.com/autinjan/idps_server/config"
-	"github.com/autinjan/idps_server/servers"
-	"github.com/spf13/viper"
 )
 
 func main() {

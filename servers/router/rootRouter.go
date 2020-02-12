@@ -1,6 +1,7 @@
 package router
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -9,10 +10,12 @@ import (
 // api rul format : /apis/[version]/[collection]?[query]
 // return body: array of json for data
 func readData(w http.ResponseWriter, r *http.Request) {
-	//_, collection, err := bodyParser(r)
-	// vars := mux.Vars(r)
-	//collection := vars["collection"]
 
+	//_, collection, err := bodyParser(r)
+
+	vars := mux.Vars(r)
+	collection := vars["collection"]
+	fmt.Println("/v1/read/", collection)
 	//query, err := createBsonQuery(r)
 
 	// if err != nil {
@@ -31,16 +34,15 @@ func readData(w http.ResponseWriter, r *http.Request) {
 }
 
 func initCrudRouter(r *mux.Router) {
-
-	r.HandleFunc("/{version:v[0-9]+}/read/{collection}", readData).Methods("GET")
+	r.HandleFunc("/api/{version:v[0-9]+}/read/{collection}", readData).Methods("GET")
 
 }
 
 // InitRouter  Init rootRouter
 func InitRouter(r *mux.Router) {
-	s := mux.NewRouter().PathPrefix("/apis").Subrouter().StrictSlash(true)
+	//s := mux.NewRouter().PathPrefix("/apis").Subrouter().StrictSlash(true)
 
-	initCrudRouter(s)
+	initCrudRouter(r)
 
 	// r.PathPrefix("/apis").Handler(negroni.New(
 	// 	negroni.HandlerFunc(ValidateTokenMiddleWare),

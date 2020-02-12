@@ -3,9 +3,11 @@ package mongodb
 import (
 	"context"
 	"fmt"
+	"log"
 	"sync"
 	"time"
 
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -64,4 +66,18 @@ func initDB(url string) *DB {
 	db.db = db.client.Database(defaultDatabase)
 	fmt.Printf("Database %s connected... \n", url)
 	return db
+}
+
+func (d *DB) SaveTagPosition(data bson.M) {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	collection := d.db.Collection("tagInformation")
+
+	res, err := collection.InsertOne(ctx, data)
+	fmt.Println("Insert id:", res.InsertedID)
+
+	if err != nil {
+		log.Println(err)
+	}
+
 }
