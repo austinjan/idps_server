@@ -1,6 +1,1 @@
-2020/02/12 18:09:07 Http server started..
-2020/02/12 18:09:12 multiple write errors: [{write errors: [{E11000 duplicate key error collection: test.tagInformation index: _id_ dup key: { : "5e033715b4d39b09fdb4c7d9" }}]}, {<nil>}]
-2020/02/12 18:09:17 multiple write errors: [{write errors: [{E11000 duplicate key error collection: test.tagInformation index: _id_ dup key: { : "5e033715b4d39b09fdb4c7d9" }}]}, {<nil>}]
-2020/02/12 18:09:22 multiple write errors: [{write errors: [{E11000 duplicate key error collection: test.tagInformation index: _id_ dup key: { : "5e033715b4d39b09fdb4c7d9" }}]}, {<nil>}]
-2020/02/12 18:09:27 multiple write errors: [{write errors: [{E11000 duplicate key error collection: test.tagInformation index: _id_ dup key: { : "5e033715b4d39b09fdb4c7d9" }}]}, {<nil>}]
-2020/02/12 18:09:32 multiple write errors: [{write errors: [{E11000 duplicate key error collection: test.tagInformation index: _id_ dup key: { : "5e033715b4d39b09fdb4c7d9" }}]}, {<nil>}]
+2020/02/19 13:14:09 Http server started..

@@ -71,6 +71,36 @@ func initDB(url string) *DB {
 func (d *DB) SaveTagPosition(data bson.M) {
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
 	defer cancel()
+	collection := d.db.Collection("tagPosition")
+
+	_, err := collection.InsertOne(ctx, data)
+	//fmt.Println("Insert id:", res.InsertedID)
+
+	if err != nil {
+		log.Println(err)
+	}
+
+}
+
+// Insert insert data into collection c
+func (d *DB) Insert(c string, data bson.M) error {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	collection := d.db.Collection(c)
+
+	res, err := collection.InsertOne(ctx, data)
+	fmt.Println("Insert id:", res.InsertedID)
+
+	if err != nil {
+		log.Println(err)
+	}
+	return err
+
+}
+
+func (d *DB) SaveTagInfo(data bson.M) {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
 	collection := d.db.Collection("tagInformation")
 
 	_, err := collection.InsertOne(ctx, data)
