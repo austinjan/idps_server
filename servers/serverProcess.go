@@ -2,13 +2,15 @@ package servers
 
 import (
 	"context"
+	"fmt"
+	"log"
+	"net/http"
+	"time"
+
 	"github.com/austinjan/idps_server/servers/router"
 	"github.com/gorilla/mux"
 	"github.com/rs/cors"
 	"github.com/spf13/viper"
-	"log"
-	"net/http"
-	"time"
 )
 
 // Run: run server
@@ -27,6 +29,7 @@ func Run(ctx context.Context) {
 		_addr = ":3011"
 	}
 
+	fmt.Println("Server start at ", _addr.(string))
 	srv := &http.Server{
 		Addr:         _addr.(string),
 		WriteTimeout: time.Second * 5,
