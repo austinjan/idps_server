@@ -3,12 +3,13 @@ package main
 import (
 	"context"
 	"fmt"
-	_ "github.com/austinjan/idps_server/config"
-	"github.com/austinjan/idps_server/servers"
-	"github.com/spf13/viper"
 	"log"
 	"os"
 	"os/signal"
+
+	_ "github.com/austinjan/idps_server/config"
+	"github.com/austinjan/idps_server/servers"
+	"github.com/spf13/viper"
 )
 
 func main() {
@@ -23,9 +24,9 @@ func main() {
 	httpCtx, httpDone := context.WithCancel(context.Background())
 	go servers.Run(httpCtx)
 
+	// db := mongodb.GetDB()
+	// db.SaveTagPosition(bson.M{"test": "testtext"})
 	c := make(chan os.Signal, 1)
-	// We'll accept graceful shutdowns when quit via SIGINT (Ctrl+C)
-	// SIGKILL, SIGQUIT or SIGTERM (Ctrl+/) will not be caught.
 	signal.Notify(c, os.Interrupt)
 
 	// Block until we receive our signal.
