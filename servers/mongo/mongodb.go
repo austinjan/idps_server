@@ -2,6 +2,8 @@ package mongodb
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"sync"
@@ -110,4 +112,49 @@ func (d *DB) SaveTagInfo(data bson.M) {
 		log.Println(err)
 	}
 
+}
+
+func (d *DB) read(c string, query bson.M) ([]bson.M, error) {
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+	collection := d.db.Collection(c)
+	cur, err := collection.Find(ctx, query)
+
+	var data []bson.M
+	if err != nil {
+		log.Println(err)
+		msg := fmt.Sprintf("collection: %s is not exist!", c)
+		return nil, errors.New(msg)
+	}
+	defer cur.Close(ctx)
+	for cur.Next(ctx) {
+		var item bson.M
+		err := cur.Decode(&item)
+		if err != nil {
+			return nil, err
+		}
+		data = append(data, item)
+	}
+
+	if len(data) == 0 {
+		msg := fmt.Sprintf("Query: %s not found result.", c)
+		return nil, errors.New(msg)
+	}
+	return data, nil
+}
+
+// Read - db.c.find(query) -> return data "ARRAY" of json format , error
+func (d *DB) Read(c string, query bson.M) ([]byte, error) {
+	fmt.Println("Read query", query)
+	data, err := d.read(c, query)
+	if err != nil {
+		fmt.Println("Read err", err)
+		return nil, err
+	}
+	jsonStr, err := json.Marshal(data)
+	if err != nil {
+		fmt.Println("Read json err", err)
+		return nil, err
+	}
+	return jsonStr, err
 }

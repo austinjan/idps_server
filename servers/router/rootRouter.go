@@ -3,10 +3,13 @@ package router
 import (
 	"encoding/json"
 	"fmt"
-	mongodb "github.com/austinjan/idps_server/servers/mongo"
-	"github.com/gorilla/mux"
 	"io/ioutil"
 	"net/http"
+	"strconv"
+
+	mongodb "github.com/austinjan/idps_server/servers/mongo"
+	"github.com/gorilla/mux"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 // Get JSON body and transform to bson
@@ -36,21 +39,31 @@ func readData(w http.ResponseWriter, r *http.Request) {
 	vars := mux.Vars(r)
 	collection := vars["collection"]
 	fmt.Println("/v1/read/", collection)
-	//query, err := createBsonQuery(r)
+	query, err := createBsonQuery(r)
+	if err != nil {
+		handleResponse(w, []byte(err.Error()), err)
+		return
+	}
 
-	// if err != nil {
-	// 	handleResponse(w, []byte(err.Error()), err)
-	// 	return
-	// }
+	from, fromerr := query["from"]
+	to, toerr := query["to"]
 
-	// db := mongodb.GetDB()
-	// jsonRet, err := db.Read(collection, query)
-	// if err != nil {
-	// 	handleResponse(w, []byte(err.Error()), err)
-	// 	return
-	// }
-	// handleResponse(w, jsonRet, err)
-	handleResponse(w, []byte("hello"), nil)
+	if fromerr != false && toerr != false {
+		_from,_ := strconv.Atoi(from.(string))
+		_to,_ := strconv.Atoi(to.(string))
+
+		query = bson.M{"startTime": bson.M{"$gte": _from, "$lt": _to}}
+		//query = bson.M{"startTime": bson.M{"$gte": 1582041600000}}
+	}
+
+	db := mongodb.GetDB()
+	jsonRet, err := db.Read(collection, query)
+	if err != nil {
+		handleResponse(w, []byte(err.Error()), err)
+		return
+	}
+	handleResponse(w, jsonRet, err)
+	// handleResponse(w, []byte("hello"), nil)
 }
 
 func testReport(w http.ResponseWriter, r *http.Request) {
@@ -89,14 +102,5 @@ func initCrudRouter(r *mux.Router) {
 
 // InitRouter  Init rootRouter
 func InitRouter(r *mux.Router) {
-	//s := mux.NewRouter().PathPrefix("/apis").Subrouter().StrictSlash(true)
-
 	initCrudRouter(r)
-
-	// r.PathPrefix("/apis").Handler(negroni.New(
-	// 	negroni.HandlerFunc(ValidateTokenMiddleWare),
-	// 	negroni.Wrap(s)))
-
-	// compatible for old api, not create
-
 }
